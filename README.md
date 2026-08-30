@@ -1,5 +1,7 @@
 # vibo-selfdeed
 
+[![SkillQA](https://img.shields.io/badge/SkillQA-A-brightgreen)](https://github.com/vnbochkarev-netizen/ViBo-SkillQA)
+
 **One product, two stages: GRILL (front door) + MISSION (engine) — powered by [ViBo Memory](https://wwwvibo.com).** Built-in DEMO memory (100 facts) works right after install, no ViBo CLI required — feel the convenience, then upgrade.
 
 The agent receives ONE concrete multi-step task and executes it as an autonomous mission: restore context from ViBo memory → scan for problems → propose fixes (safe, with confirmation) → apply with backups → iterate via paths A/B/C → **save the lesson back into ViBo** → report with numbers.
