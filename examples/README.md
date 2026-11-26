@@ -1,67 +1,52 @@
-# vibo-selfdeed — примеры применения
+# vibo-selfdeed — usage examples
 
-Три типовых кейса. Каждый — это «задание», которое хозяин даёт агенту.
-Агент действует по SKILL.md (START → SCAN → PROPOSE → FIX → ITERATE → LEARN → REPORT).
+Three typical cases. Each one is a brief the owner gives the agent.
+The agent follows SKILL.md (START → SCAN → PROPOSE → FIX → ITERATE → LEARN → REPORT).
 
----
+## Example 1 — code: "Find and fix the bugs in src/"
 
-## Пример 1 — код: «Найди и исправь баги в src/»
-
-**Задача:** в проекте `src/` падают тесты и есть дублирование кода.
+**Task:** tests fail in `src/` and there is duplicated code.
 
 ```
-./run_mission.sh init --task "исправить падающие тесты в src/" --target 90
-python3 lib_vibo.py find "src тесты архитектура"      # START: контекст
-./run_mission.sh checkpoint START ok "проект — Flask API, падают 3 теста"
-# SCAN: pytest, grep дублей → 3 бага
-./run_mission.sh checkpoint SCAN ok "3 бага: NPE в routes, таймаут, дубль helper"
-./run_mission.sh progress 0/3
-# PROPOSE: диффы → подтверждение (или --auto)
-# FIX: safety.backup("src/routes.py") → правки → pytest
-./run_mission.sh progress 2/3
-# ITERATE: путь A не помог на 3-м баге → switch B
-./run_mission.sh switch B
-./run_mission.sh progress 3/3
-# LEARN: vibo add lesson "таймаут-баг лечится asyncio.timeout, не sleep"
-./run_mission.sh checkpoint LEARN ok "урок сохранён"
-./run_mission.sh finish
+./run_mission.sh init --task "fix failing tests in src/" --target 90
+python3 lib_vibo.py find "src tests architecture"      # START: context
+./run_mission.sh checkpoint START ok "project is a Flask API, 3 tests failing"
+# SCAN: pytest, duplication grep → 3 bugs
+./run_mission.sh checkpoint SCAN ok "3 bugs: NPE in routes, timeout, duplicate helper"
+# PROPOSE: diffs → confirmation (or --auto)
+# FIX: safety.backup("src/routes.py") → edits → pytest
+# ITERATE: path A did not fix the third bug → switch to B
+# LEARN: vibo add lesson "timeout bug is fixed with asyncio.timeout, not sleep"
+./run_mission.sh checkpoint LEARN ok "lesson saved"
 ```
 
----
+## Example 2 — documents: "Proofread docs/ and bring it to one style"
 
-## Пример 2 — документы: «Вычитай и приведи к единому стилю docs/»
-
-**Задача:** в `docs/` 12 файлов, разный стиль (заголовки, термины).
+**Task:** 12 files in `docs/`, inconsistent style (headings, terms).
 
 ```
-./run_mission.sh init --task "единый стиль docs/ (заголовки+термины)" --target 100
-python3 lib_vibo.py find "docs стиль термины"
-# SCAN: grep заголовков (# vs ##), терминов (ViBo vs VIBO) → 8 расхождений
-# PROPOSE → FIX (бэкап каждого файла)
-# LEARN: vibo add lesson "стандарт: H2 для разделов, термин 'ViBo' один"
-./run_mission.sh finish
+./run_mission.sh init --task "single style for docs/ (headings + terms)" --target 100
+python3 lib_vibo.py find "docs style terms"
+# SCAN: grep headings (# vs ##), terms (ViBo vs VIBO) → 8 mismatches
+# PROPOSE → FIX (back up every file)
+# LEARN: vibo add lesson "standard: H2 for sections, one spelling of 'ViBo'"
 ```
 
----
+## Example 3 — configs: "Check that configs agree with each other"
 
-## Пример 3 — конфиги: «Проверь согласованность конфигов»
-
-**Задача:** `config/` — prod/staging/dev должны совпадать по ключам.
+**Task:** `config/` — prod, staging and dev must share the same keys.
 
 ```
-./run_mission.sh init --task "сверка config/ prod vs dev" --target 100
-# SCAN: сравнить ключи (python yaml/json) → 2 пропущенных ключа
-# PROPOSE → FIX (добавить ключи, бэкап)
-# LEARN: vibo add lesson "ключ X обязателен во всех окружениях"
-./run_mission.sh finish
+./run_mission.sh init --task "compare config/ prod vs dev" --target 100
+# SCAN: compare keys (python yaml/json) → 2 missing keys
+# PROPOSE → FIX (add keys, back up)
+# LEARN: vibo add lesson "key X is required in every environment"
 ```
 
----
+## Advice for the agent
 
-## Советы агенту
-
-- **SCAN исполняет сам агент** (линт, тесты, grep, чтение файлов) — скилл даёт структуру и память, а не «магический сканер». Это по ТЗ: агент — исполнитель, скилл — каркас.
-- **Память — сила:** перед каждым кругом `vibo find` — не наступай на грабли.
-- **Пути А/Б/В:** если способ не дал роста 2 круга — переключись, не долби.
-- **Безопасность:** бэкап до правки, 3 попытки, 10 минут, L3 не трогать.
-- **Честность:** не выдумывай «магию» — отчёт только по фактам.
+- **SCAN is done by the agent itself** (lint, tests, grep, reading files). The skill provides structure and memory, not magic.
+- **Memory is leverage:** run `vibo find` before every round — do not step on the same rake twice.
+- **Paths A/B/C:** if an approach shows no progress for two rounds, switch; do not grind.
+- **Safety:** back up before editing, three attempts, ten minutes, never touch L3.
+- **Honesty:** do not invent "magic" — report only what actually happened.
